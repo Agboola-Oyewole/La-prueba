@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:la_prueba/components/options_container.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -12,7 +13,7 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      backgroundColor: Color(0xff1A3636),
+      backgroundColor: const Color(0xff1A3636),
       body: Padding(
         padding: const EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0),
         child: Column(
@@ -21,17 +22,22 @@ class _QuizScreenState extends State<QuizScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      color: Color(0xffD6BD98)),
-                  padding: EdgeInsets.all(10.0),
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        color: Color(0xffD6BD98)),
+                    padding: const EdgeInsets.all(10.0),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                Text(
+                const Text(
                   'Question 6 of 10',
                   style: TextStyle(
                       color: Colors.white,
@@ -39,21 +45,21 @@ class _QuizScreenState extends State<QuizScreen> {
                       fontSize: 20.0),
                 ),
                 Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       color: Color(0xffD6BD98)),
-                  padding: EdgeInsets.all(10.0),
-                  child: Icon(
+                  padding: const EdgeInsets.all(10.0),
+                  child: const Icon(
                     Icons.bookmark_add_outlined,
                     color: Colors.white,
                   ),
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 40.0,
             ),
-            Text(
+            const Text(
               "Category:  Accessibility",
               style: TextStyle(
                   fontStyle: FontStyle.italic,
@@ -61,10 +67,10 @@ class _QuizScreenState extends State<QuizScreen> {
                   fontSize: 16.0,
                   fontWeight: FontWeight.w900),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20.0,
             ),
-            Text(
+            const Text(
               'Which of these color contrast ratio defines the minimum WCAG'
               ' 2.1 Level AA requirement for normal text?',
               style: TextStyle(
@@ -72,7 +78,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   fontWeight: FontWeight.w900,
                   fontSize: 25.0),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30.0,
             ),
             Row(
@@ -80,7 +86,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 Expanded(
                     flex: 1,
                     child: Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(5.0),
                           bottomLeft: Radius.circular(5.0),
@@ -92,7 +98,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 Expanded(
                     flex: 2,
                     child: Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         borderRadius: BorderRadius.only(
                           topRight: Radius.circular(5.0),
                           bottomRight: Radius.circular(5.0),
@@ -103,146 +109,22 @@ class _QuizScreenState extends State<QuizScreen> {
                     ))
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 40.0,
             ),
-            Container(
-              padding: EdgeInsets.all(15.0),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  color: Color(0xff677D6A)),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(6.0)),
-                        color: Color(0xffD6BD98)),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-                    child: Text(
-                      'A',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 20.0),
-                    ),
-                  ),
-                  SizedBox(width: 25.0),
-                  Text(
-                    '4.5 : 1.0',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 23.0,
-                        fontWeight: FontWeight.w900),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(
+            const OptionsContainer(option: "A", value: "Vanessa"),
+            const SizedBox(
               height: 20.0,
             ),
-            Container(
-              padding: EdgeInsets.all(15.0),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  color: Color(0xff677D6A)),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(6.0)),
-                        color: Color(0xffD6BD98)),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-                    child: Text(
-                      'B',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 20.0),
-                    ),
-                  ),
-                  SizedBox(width: 25.0),
-                  Text(
-                    '4.5 : 1.0',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 23.0,
-                        fontWeight: FontWeight.w900),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(
+            const OptionsContainer(option: "B", value: "Erik"),
+            const SizedBox(
               height: 20.0,
             ),
-            Container(
-              padding: EdgeInsets.all(15.0),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  color: Color(0xff677D6A)),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(6.0)),
-                        color: Color(0xffD6BD98)),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-                    child: Text(
-                      'C',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 20.0),
-                    ),
-                  ),
-                  SizedBox(width: 25.0),
-                  Text(
-                    '4.5 : 1.0',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 23.0,
-                        fontWeight: FontWeight.w900),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(
+            const OptionsContainer(option: "C", value: "Don Octavio"),
+            const SizedBox(
               height: 20.0,
             ),
-            Container(
-              padding: EdgeInsets.all(15.0),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  color: Color(0xff677D6A)),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(6.0)),
-                        color: Color(0xffD6BD98)),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-                    child: Text(
-                      'D',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 20.0),
-                    ),
-                  ),
-                  SizedBox(width: 25.0),
-                  Text(
-                    '4.5 : 1.0',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 23.0,
-                        fontWeight: FontWeight.w900),
-                  )
-                ],
-              ),
-            ),
+            const OptionsContainer(option: "D", value: "Agboola")
           ],
         ),
       ),
