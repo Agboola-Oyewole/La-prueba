@@ -31,12 +31,14 @@ class OptionsContainer extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 25.0),
-          Text(
-            value,
-            style: const TextStyle(
-                color: Colors.white,
-                fontSize: 23.0,
-                fontWeight: FontWeight.w900),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 23.0,
+                  fontWeight: FontWeight.w900),
+            ),
           )
         ],
       ),

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:la_prueba/screen/quiz_screen.dart';
@@ -14,25 +12,56 @@ class PropertiesDropdown extends StatefulWidget {
 }
 
 class _PropertiesDropdownState extends State<PropertiesDropdown> {
-  String? selectedColor;
-  String? selectedSize;
+  String? selectedDifficulty;
+
+  String? selectedQuestionType;
   int? selectedNumber;
+
+  final Map<String, int> triviaCategories = {
+    'General Knowledge': 9,
+    'Books': 10,
+    'Film': 11,
+    'Music': 12,
+    'Musicals & Theatres': 13,
+    'Television': 14,
+    'Video Games': 15,
+    'Board Games': 16,
+    'Science & Nature': 17,
+    'Science: Computers': 18,
+    'Science: Mathematics': 19,
+    'Mythology': 20,
+    'Sports': 21,
+    'Geography': 22,
+    'History': 23,
+    'Politics': 24,
+    'Art': 25,
+    'Celebrities': 26,
+    'Animals': 27,
+    'Vehicles': 28,
+    'Comics': 29,
+    'Science: Gadgets': 30,
+    'Japanese Anime & Manga': 31,
+    'Cartoon & Animations': 32,
+  };
+
   final List<String> difficulty = [
     'Easy',
     'Medium',
     'Hard',
   ];
 
-  final List<String> questionType = [
-    'True / False',
-    'Multiple Choice',
-  ];
+  final Map<String, String> questionTypeMap = {
+    'True / False': 'boolean',
+    'Multiple Choice': 'multiple',
+  };
+
+  String? selectedQuestionTypeDisplay;
 
   CupertinoPicker iosPicker(list) {
     return CupertinoPicker(
       itemExtent: 45.0,
       onSelectedItemChanged: (selectedIndex) {
-        selectedColor = list[selectedIndex];
+        selectedDifficulty = list[selectedIndex];
       },
       children: [
         for (String currency in list)
@@ -68,6 +97,7 @@ class _PropertiesDropdownState extends State<PropertiesDropdown> {
               ),
             ),
             const SizedBox(height: 30.0),
+            // Number Dropdown (unchanged)
             Container(
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black, width: 2.0),
@@ -92,7 +122,7 @@ class _PropertiesDropdownState extends State<PropertiesDropdown> {
                     icon: const Icon(Icons.arrow_drop_down, size: 30.0),
                     underline: const SizedBox(),
                     // Removes the default underline
-                    onChanged: (int? newValue) {
+                    onChanged: (newValue) {
                       setState(() {
                         selectedNumber = newValue;
                       });
@@ -113,18 +143,54 @@ class _PropertiesDropdownState extends State<PropertiesDropdown> {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            Platform.isIOS
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 15.0),
-                    child: Text(
-                      'Scroll to select a feature.',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+            const SizedBox(height: 20.0),
+
+            // Difficulty Dropdown
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 2.0),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Material(
+                borderRadius: BorderRadius.circular(10.0),
+                elevation: 5.0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 20.0),
+                  child: DropdownButton<String?>(
+                    isExpanded: true,
+                    value: selectedDifficulty,
+                    hint: const Text(
+                      'Difficulty',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w900, fontSize: 16.0),
                     ),
-                  )
-                : Container(),
+                    icon: const Icon(Icons.arrow_drop_down, size: 30.0),
+                    underline: const SizedBox(),
+                    // Removes the default underline
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedDifficulty = newValue;
+                      });
+                    },
+                    items: difficulty
+                        .map<DropdownMenuItem<String?>>((String value) {
+                      return DropdownMenuItem<String?>(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16.0),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20.0),
+
+            // Question Type Dropdown
             Container(
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black, width: 2.0),
@@ -134,122 +200,41 @@ class _PropertiesDropdownState extends State<PropertiesDropdown> {
                 borderRadius: BorderRadius.circular(10.0),
                 elevation: 5.0,
                 child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15.0, horizontal: 20.0),
-                    child: Platform.isIOS
-                        ? CupertinoPicker(
-                            itemExtent: 45.0,
-                            onSelectedItemChanged: (selectedIndex) {
-                              selectedColor = difficulty[selectedIndex];
-                            },
-                            children: [
-                              for (String currency in difficulty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 12.0),
-                                  child: Text(
-                                    currency,
-                                    style: const TextStyle(
-                                        color: Color(0xFF001B2E),
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 16.0),
-                                  ),
-                                )
-                            ],
-                          )
-                        : DropdownButton<String>(
-                            isExpanded: true,
-                            value: selectedColor,
-                            hint: const Text(
-                              'Difficulty',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w900, fontSize: 16.0),
-                            ),
-                            icon: const Icon(Icons.arrow_drop_down, size: 30.0),
-                            underline: const SizedBox(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selectedColor = newValue;
-                              });
-                            },
-                            items: difficulty
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16.0),
-                                ),
-                              );
-                            }).toList(),
-                          )),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 20.0),
+                  child: DropdownButton<String?>(
+                    isExpanded: true,
+                    value: selectedQuestionTypeDisplay,
+                    hint: const Text(
+                      'Question Type',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w900, fontSize: 16.0),
+                    ),
+                    icon: const Icon(Icons.arrow_drop_down, size: 30.0),
+                    underline: const SizedBox(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedQuestionTypeDisplay = newValue;
+                        selectedQuestionType = questionTypeMap[newValue!];
+                      });
+                    },
+                    items: questionTypeMap.keys
+                        .map<DropdownMenuItem<String?>>((String value) {
+                      return DropdownMenuItem<String?>(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16.0),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
             ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black, width: 2.0),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Material(
-                borderRadius: BorderRadius.circular(10.0),
-                elevation: 5.0,
-                child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15.0, horizontal: 20.0),
-                    child: Platform.isIOS
-                        ? CupertinoPicker(
-                            itemExtent: 45.0,
-                            onSelectedItemChanged: (selectedIndex) {
-                              selectedSize = questionType[selectedIndex];
-                            },
-                            children: [
-                              for (String currency in questionType)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 12.0),
-                                  child: Text(
-                                    currency,
-                                    style: const TextStyle(
-                                        color: Color(0xFF001B2E),
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 16.0),
-                                  ),
-                                )
-                            ],
-                          )
-                        : DropdownButton<String>(
-                            isExpanded: true,
-                            value: selectedSize,
-                            hint: const Text(
-                              'Question Type',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w900, fontSize: 16.0),
-                            ),
-                            icon: const Icon(Icons.arrow_drop_down, size: 30.0),
-                            underline: const SizedBox(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selectedSize = newValue;
-                              });
-                            },
-                            items: questionType
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16.0),
-                                ),
-                              );
-                            }).toList(),
-                          )),
-              ),
-            ),
+
+            // Confirm button (unchanged)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: GestureDetector(
@@ -258,7 +243,16 @@ class _PropertiesDropdownState extends State<PropertiesDropdown> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const QuizScreen()));
+                          builder: (context) => QuizScreen(
+                                categoryName:
+                                    triviaCategories[widget.categoryName] ?? 9,
+                                difficulty:
+                                    selectedDifficulty?.toLowerCase() ?? 'easy',
+                                // Default to 'Easy' if null
+                                questionNumber: selectedNumber ?? 10,
+                                questionType: selectedQuestionType ??
+                                    'multiple', // Default
+                              )));
                 },
                 child: Material(
                   borderRadius: BorderRadius.circular(10.0),
