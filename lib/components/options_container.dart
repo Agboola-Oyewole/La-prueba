@@ -2,18 +2,23 @@ import 'package:flutter/material.dart';
 
 class OptionsContainer extends StatelessWidget {
   const OptionsContainer(
-      {super.key, required this.option, required this.value});
+      {super.key,
+      required this.option,
+      required this.value,
+      required this.border});
 
   final String option;
   final String value;
+  final bool border;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(15.0),
-      decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          color: Color(0xff677D6A)),
+      decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+          border: border ? Border.all(color: Colors.white, width: 5) : null,
+          color: const Color(0xff677D6A)),
       child: Row(
         children: [
           Container(

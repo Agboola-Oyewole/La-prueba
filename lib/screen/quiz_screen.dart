@@ -6,6 +6,10 @@ import 'package:http/http.dart' as http;
 import 'package:la_prueba/components/options_container.dart';
 import 'package:la_prueba/screen/result_screen.dart';
 
+// TODO: WHEN AN OPTION IS SELECTED IT SHOULD HAVE AN ANIMATOR OR INDICATOR TO KNOW IT WAS SELECTED
+// TODO: WHEN THE OPTION IS CLICKED A NEXT BUTTON SHOULD SHOW
+// TODO: WHEN PREVIOUS IS TAPPED THE SELECTED ANSWER FROM THE LAST QUESTION SHOULD BE SELECTED AND THE ANSWER IF CHANGED SHOULD BE UPDATED IN THE ANSWERS LIST OF PADDING WIDGETS
+// TODO: UPDATE THE ANSWERS LIST TO BE MORE FLEXIBLE
 class QuizScreen extends StatefulWidget {
   const QuizScreen(
       {super.key,
@@ -25,19 +29,16 @@ class QuizScreen extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen> {
   List<dynamic> questions = []; // Store the trivia questions
-  List<dynamic> questionOptions = [];
+  List<String> questionOptions = [];
   int questionNumber = 0;
   HtmlUnescape unescape = HtmlUnescape();
   bool isDone = false;
   List<Widget> answers = [];
+  Map<String, int> selectedAnswer = {};
 
   @override
   void initState() {
     super.initState();
-    print(widget.categoryName);
-    print(widget.difficulty);
-    print(widget.questionNumber);
-    print(widget.questionType);
     fetchQuestions(); // Fetch questions when the widget is initialized
   }
 
@@ -48,14 +49,14 @@ class _QuizScreenState extends State<QuizScreen> {
     if (fetchedQuestions.isNotEmpty) {
       questions = fetchedQuestions;
       setState(() {
-        updateOptions();
+        updateOptions(true);
       });
     } else {
       print('No questions were fetched from the API.');
     }
   }
 
-  void updateOptions() {
+  void updateOptions(bool isNotPrevious) {
     setState(() {
       questionOptions.clear();
 
@@ -70,13 +71,15 @@ class _QuizScreenState extends State<QuizScreen> {
       }
 
       // Shuffle the options to randomize the order
-      questionOptions.shuffle();
+      if (isNotPrevious) {
+        questionOptions.shuffle();
+      }
     });
   }
 
   // Check if the selected answer is correct
-  void checkAnswer(String selectedAnswer) {
-    if (selectedAnswer == questions[questionNumber]['correct_answer']) {
+  void checkAnswer(String answer) {
+    if (answer == questions[questionNumber]['correct_answer']) {
       setState(() {
         if (questions.length - 1 >= questionNumber) {
           answers.add(Padding(
@@ -103,7 +106,10 @@ class _QuizScreenState extends State<QuizScreen> {
           });
         } else {
           questionNumber += 1; // Move to the next question
-          updateOptions();
+          setState(() {
+            selectedAnswer = {};
+          });
+          updateOptions(true);
         }
       });
     } else {
@@ -133,7 +139,10 @@ class _QuizScreenState extends State<QuizScreen> {
           });
         } else {
           questionNumber += 1; // Move to the next question
-          updateOptions();
+          setState(() {
+            selectedAnswer = {};
+          });
+          updateOptions(true);
         }
       });
     }
@@ -270,23 +279,38 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          checkAnswer(questionOptions[0]);
+                          setState(() {
+                            selectedAnswer = {questionOptions[0]: 0};
+                            print(selectedAnswer);
+                          });
                         },
                         child: OptionsContainer(
-                          option: "A",
-                          value: unescape.convert(questionOptions[0]),
-                        ),
+                            option: "A",
+                            value: unescape.convert(questionOptions[0]),
+                            border: selectedAnswer.isEmpty
+                                ? false
+                                : selectedAnswer.entries.first.value == 0
+                                    ? true
+                                    : false),
                       ),
                       const SizedBox(
                         height: 20.0,
                       ),
                       GestureDetector(
                         onTap: () {
-                          checkAnswer(questionOptions[1]);
+                          setState(() {
+                            selectedAnswer = {questionOptions[1]: 1};
+                            print(selectedAnswer);
+                          });
                         },
                         child: OptionsContainer(
                           option: "B",
                           value: unescape.convert(questionOptions[1]),
+                          border: selectedAnswer.isEmpty
+                              ? false
+                              : selectedAnswer.entries.first.value == 1
+                                  ? true
+                                  : false,
                         ),
                       ),
                       const SizedBox(
@@ -294,11 +318,19 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          checkAnswer(questionOptions[2]);
+                          setState(() {
+                            selectedAnswer = {questionOptions[2]: 2};
+                            print(selectedAnswer);
+                          });
                         },
                         child: OptionsContainer(
                           option: "C",
                           value: unescape.convert(questionOptions[2]),
+                          border: selectedAnswer.isEmpty
+                              ? false
+                              : selectedAnswer.entries.first.value == 2
+                                  ? true
+                                  : false,
                         ),
                       ),
                       const SizedBox(
@@ -306,47 +338,129 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          checkAnswer(questionOptions[3]);
+                          setState(() {
+                            selectedAnswer = {questionOptions[3]: 3};
+                            print(selectedAnswer);
+                          });
                         },
                         child: OptionsContainer(
-                          option: "D",
-                          value: unescape.convert(questionOptions[3]),
-                        ),
+                            option: "D",
+                            value: unescape.convert(questionOptions[3]),
+                            border: selectedAnswer.isEmpty
+                                ? false
+                                : selectedAnswer.entries.first.value == 3
+                                    ? true
+                                    : false),
                       ),
                       const SizedBox(
                         height: 30.0,
                       ),
-                      isDone
-                          ? GestureDetector(
-                              onTap: () {
-                                List<Widget> savedAnswers =
-                                    answers.sublist(0, questions.length);
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ResultScreen(
-                                            answers: savedAnswers)));
-                              },
-                              child: Material(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Colors.black,
-                                elevation: 5.0,
-                                child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 25.0, horizontal: 20.0),
-                                    child: Center(
-                                      child: Text(
-                                        textAlign: TextAlign.center,
-                                        'Get Results',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.w900),
-                                      ),
-                                    )),
+                      Row(
+                        children: [
+                          if (selectedAnswer.isNotEmpty && !isDone)
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (selectedAnswer.isNotEmpty) {
+                                    // Access the first key
+                                    String firstKey =
+                                        selectedAnswer.entries.first.key;
+
+                                    // You can now pass the first key to the checkAnswer function
+                                    checkAnswer(firstKey);
+                                  } else {
+                                    print('The map is empty');
+                                  }
+                                  print(answers);
+                                },
+                                child: Material(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color: Colors.black,
+                                  elevation: 5.0,
+                                  child: const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 25.0, horizontal: 20.0),
+                                      child: Center(
+                                        child: Text(
+                                          textAlign: TextAlign.center,
+                                          'NEXT',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.w900),
+                                        ),
+                                      )),
+                                ),
                               ),
-                            )
-                          : Container()
+                            ),
+                          SizedBox(width: 10.0),
+                          if (questionNumber >= 1)
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    questionNumber -= 1;
+                                    updateOptions(false);
+                                    isDone = false;
+                                  });
+                                },
+                                child: Material(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color: Colors.black,
+                                  elevation: 5.0,
+                                  child: const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 25.0, horizontal: 20.0),
+                                      child: Center(
+                                        child: Text(
+                                          textAlign: TextAlign.center,
+                                          'PREVIOUS',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.w900),
+                                        ),
+                                      )),
+                                ),
+                              ),
+                            ),
+                          isDone ? SizedBox(width: 10.0) : Container(),
+                          isDone
+                              ? Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      List<Widget> savedAnswers =
+                                          answers.sublist(0, questions.length);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ResultScreen(
+                                                      answers: savedAnswers)));
+                                    },
+                                    child: Material(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      color: Colors.black,
+                                      elevation: 5.0,
+                                      child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 25.0, horizontal: 20.0),
+                                          child: Center(
+                                            child: Text(
+                                              textAlign: TextAlign.center,
+                                              'END QUIZ',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.w900),
+                                            ),
+                                          )),
+                                    ),
+                                  ),
+                                )
+                              : Container()
+                        ],
+                      )
                     ],
                   ),
                 ),

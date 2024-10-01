@@ -59,40 +59,38 @@ class HomeScreen extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                   fontSize: 20.0),
             ),
-            const SizedBox(
-              height: 30.0,
-            ),
-            TextField(
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                // Background color for the text field
-                hintText: 'Search by quiz categories',
-                // Placeholder text
-                prefixIcon: const Padding(
-                  padding: EdgeInsets.only(left: 10.0),
-                  child: Icon(
-                    Icons.search, // The search icon
-                    color: Colors.black,
-                  ),
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 20),
-                // Adjust padding inside the text field
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  // Rounded corners
-                  borderSide: BorderSide.none, // No visible border
-                ),
-                hintStyle: const TextStyle(
-                  color: Colors.black, // Color for the hint text
-                ),
-              ),
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 18.0),
-            ),
+
+            // TextField(
+            //   cursorColor: Colors.black,
+            //   decoration: InputDecoration(
+            //     filled: true,
+            //     fillColor: Colors.white,
+            //     // Background color for the text field
+            //     hintText: 'Search by quiz categories',
+            //     // Placeholder text
+            //     prefixIcon: const Padding(
+            //       padding: EdgeInsets.only(left: 10.0),
+            //       child: Icon(
+            //         Icons.search, // The search icon
+            //         color: Colors.black,
+            //       ),
+            //     ),
+            //     contentPadding: const EdgeInsets.symmetric(vertical: 20),
+            //     // Adjust padding inside the text field
+            //     border: OutlineInputBorder(
+            //       borderRadius: BorderRadius.circular(30.0),
+            //       // Rounded corners
+            //       borderSide: BorderSide.none, // No visible border
+            //     ),
+            //     hintStyle: const TextStyle(
+            //       color: Colors.black, // Color for the hint text
+            //     ),
+            //   ),
+            //   style: const TextStyle(
+            //       color: Colors.white,
+            //       fontWeight: FontWeight.w900,
+            //       fontSize: 18.0),
+            // ),
             const SizedBox(height: 30),
             const Text(
               "Explore Categories",
