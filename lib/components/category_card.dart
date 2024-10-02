@@ -9,8 +9,7 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
+    return GestureDetector(
         onTap: () {
           showModalBottomSheet(
               backgroundColor: const Color(0xff40534C),
@@ -19,21 +18,20 @@ class CategoryCard extends StatelessWidget {
                   PropertiesDropdown(categoryName: name));
         },
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              height: 170,
+              height: 130,
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(6.0)),
               ),
               padding: const EdgeInsets.all(10.0),
               child: ClipRRect(
-                // To make sure the image respects the border radius
                 borderRadius: BorderRadius.circular(6.0),
                 child: Image.network(
                   imageSrc,
                   fit: BoxFit.cover,
-                  // Ensures the image covers the container
-                  alignment: Alignment.center, // Centers the image
+                  alignment: Alignment.center,
                 ),
               ),
             ),
@@ -42,14 +40,14 @@ class CategoryCard extends StatelessWidget {
             ),
             Text(
               name,
+              textAlign: TextAlign.center, // Ensure text is centered
               style: const TextStyle(
-                  color: Color(0xffD6BD98),
-                  fontWeight: FontWeight.w900,
-                  fontSize: 18.0),
+                color: Color(0xffD6BD98),
+                fontWeight: FontWeight.w900,
+                fontSize: 18.0,
+              ),
             )
           ],
-        ),
-      ),
-    );
+        ));
   }
 }

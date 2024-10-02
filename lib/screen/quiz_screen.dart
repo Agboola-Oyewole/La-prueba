@@ -6,10 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:la_prueba/components/options_container.dart';
 import 'package:la_prueba/screen/result_screen.dart';
 
-// TODO: WHEN AN OPTION IS SELECTED IT SHOULD HAVE AN ANIMATOR OR INDICATOR TO KNOW IT WAS SELECTED
-// TODO: WHEN THE OPTION IS CLICKED A NEXT BUTTON SHOULD SHOW
-// TODO: WHEN PREVIOUS IS TAPPED THE SELECTED ANSWER FROM THE LAST QUESTION SHOULD BE SELECTED AND THE ANSWER IF CHANGED SHOULD BE UPDATED IN THE ANSWERS LIST OF PADDING WIDGETS
-// TODO: UPDATE THE ANSWERS LIST TO BE MORE FLEXIBLE
 class QuizScreen extends StatefulWidget {
   const QuizScreen(
       {super.key,
@@ -33,8 +29,10 @@ class _QuizScreenState extends State<QuizScreen> {
   int questionNumber = 0;
   HtmlUnescape unescape = HtmlUnescape();
   bool isDone = false;
-  List<Widget> answers = [];
-  Map<String, int> selectedAnswer = {};
+  bool isSelected = false;
+  Map<int, String> correctAnswers = {};
+  Map<int, String> incorrectAnswers = {};
+  List<Map<int, String>> answers = [];
 
   @override
   void initState() {
@@ -50,6 +48,7 @@ class _QuizScreenState extends State<QuizScreen> {
       questions = fetchedQuestions;
       setState(() {
         updateOptions(true);
+        print(questionOptions);
       });
     } else {
       print('No questions were fetched from the API.');
@@ -69,10 +68,10 @@ class _QuizScreenState extends State<QuizScreen> {
           i++) {
         questionOptions.add(questions[questionNumber]['incorrect_answers'][i]);
       }
-
-      // Shuffle the options to randomize the order
-      if (isNotPrevious) {
-        questionOptions.shuffle();
+      if (!isNotPrevious) {
+        setState(() {
+          isSelected = true;
+        });
       }
     });
   }
@@ -82,23 +81,18 @@ class _QuizScreenState extends State<QuizScreen> {
     if (answer == questions[questionNumber]['correct_answer']) {
       setState(() {
         if (questions.length - 1 >= questionNumber) {
-          answers.add(Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                  border: Border.all(color: Colors.green)),
-              padding:
-                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-              child: Text(
-                (questionNumber + 1).toString(),
-                style: const TextStyle(
-                    color: Colors.green,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 20.0),
-              ),
-            ),
-          ));
+          if (incorrectAnswers.containsKey(questionNumber)) {
+            incorrectAnswers.remove(questionNumber);
+          }
+          if (correctAnswers.containsKey(questionNumber)) {
+            // Update the value if the key exists
+            correctAnswers[questionNumber] =
+                answer; // Update the existing answer
+          } else {
+            // If the key does not exist, add a new entry
+            correctAnswers[questionNumber] = answer; // Add new entry
+            isSelected = false;
+          }
         }
         if (questionNumber >= questions.length - 1) {
           setState(() {
@@ -106,32 +100,24 @@ class _QuizScreenState extends State<QuizScreen> {
           });
         } else {
           questionNumber += 1; // Move to the next question
-          setState(() {
-            selectedAnswer = {};
-          });
           updateOptions(true);
         }
       });
     } else {
       setState(() {
         if (questions.length - 1 >= questionNumber) {
-          answers.add(Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                  border: Border.all(color: Colors.red)),
-              padding:
-                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-              child: Text(
-                (questionNumber + 1).toString(),
-                style: const TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 20.0),
-              ),
-            ),
-          ));
+          if (correctAnswers.containsKey(questionNumber)) {
+            correctAnswers.remove(questionNumber);
+          }
+          if (incorrectAnswers.containsKey(questionNumber)) {
+            // Update the value if the key exists
+            incorrectAnswers[questionNumber] =
+                answer; // Update the existing answer
+          } else {
+            // If the key does not exist, add a new entry
+            incorrectAnswers[questionNumber] = answer; // Add new entry
+            isSelected = false;
+          }
         }
         if (questionNumber >= questions.length - 1) {
           setState(() {
@@ -139,9 +125,6 @@ class _QuizScreenState extends State<QuizScreen> {
           });
         } else {
           questionNumber += 1; // Move to the next question
-          setState(() {
-            selectedAnswer = {};
-          });
           updateOptions(true);
         }
       });
@@ -257,7 +240,8 @@ class _QuizScreenState extends State<QuizScreen> {
                         height: 40.0,
                       ),
                       Text(
-                        "Category:  ${questions[questionNumber]['category']}",
+                        unescape.convert(
+                            "Category:  ${questions[questionNumber]['category']}"),
                         style: const TextStyle(
                             fontStyle: FontStyle.italic,
                             color: Color(0xffD6BD98),
@@ -277,123 +261,319 @@ class _QuizScreenState extends State<QuizScreen> {
                       const SizedBox(
                         height: 50.0,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedAnswer = {questionOptions[0]: 0};
-                            print(selectedAnswer);
-                          });
-                        },
-                        child: OptionsContainer(
-                            option: "A",
-                            value: unescape.convert(questionOptions[0]),
-                            border: selectedAnswer.isEmpty
-                                ? false
-                                : selectedAnswer.entries.first.value == 0
-                                    ? true
-                                    : false),
-                      ),
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedAnswer = {questionOptions[1]: 1};
-                            print(selectedAnswer);
-                          });
-                        },
-                        child: OptionsContainer(
-                          option: "B",
-                          value: unescape.convert(questionOptions[1]),
-                          border: selectedAnswer.isEmpty
-                              ? false
-                              : selectedAnswer.entries.first.value == 1
-                                  ? true
-                                  : false,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedAnswer = {questionOptions[2]: 2};
-                            print(selectedAnswer);
-                          });
-                        },
-                        child: OptionsContainer(
-                          option: "C",
-                          value: unescape.convert(questionOptions[2]),
-                          border: selectedAnswer.isEmpty
-                              ? false
-                              : selectedAnswer.entries.first.value == 2
-                                  ? true
-                                  : false,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedAnswer = {questionOptions[3]: 3};
-                            print(selectedAnswer);
-                          });
-                        },
-                        child: OptionsContainer(
-                            option: "D",
-                            value: unescape.convert(questionOptions[3]),
-                            border: selectedAnswer.isEmpty
-                                ? false
-                                : selectedAnswer.entries.first.value == 3
-                                    ? true
-                                    : false),
-                      ),
+                      widget.questionType == 'boolean'
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      isSelected = true;
+                                      bool exists = false;
+                                      answers.removeWhere(
+                                          (map) => map.values.contains(''));
+
+                                      // Loop through the list to check if the answer already exists
+                                      for (var map in answers) {
+                                        if (map.containsKey(questionNumber)) {
+                                          // Check if the value is different, if so, update it
+                                          if (map[questionNumber] !=
+                                              questionOptions[0]) {
+                                            map[questionNumber] =
+                                                questionOptions[
+                                                    0]; // Update existing answer
+                                            // String oldValue = map.remove(questionNumber)!;
+                                            //
+                                            // // Add a new key-value pair with the updated key (2)
+                                            // map[2] = oldValue;
+                                          }
+                                          exists = true;
+                                          break; // Exit loop as the questionNumber is found
+                                        }
+                                      }
+
+                                      // If the answer doesn't exist, add it
+                                      if (!exists) {
+                                        answers.add({
+                                          questionNumber: questionOptions[0]
+                                        });
+                                      }
+
+                                      print(answers);
+                                    });
+                                  },
+                                  child: OptionsContainer(
+                                      option: "A",
+                                      value:
+                                          unescape.convert(questionOptions[0]),
+                                      border: answers.isEmpty
+                                          ? false
+                                          : answers[questionNumber]
+                                                      .entries
+                                                      .first
+                                                      .value ==
+                                                  questionOptions[0]
+                                              ? true
+                                              : false),
+                                ),
+                                const SizedBox(
+                                  height: 20.0,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      isSelected = true;
+                                      bool exists = false;
+                                      answers.removeWhere(
+                                          (map) => map.values.contains(''));
+
+                                      // Loop through the list to check if the answer already exists
+                                      for (var map in answers) {
+                                        if (map.containsKey(questionNumber)) {
+                                          // Check if the value is different, if so, update it
+                                          if (map[questionNumber] !=
+                                              questionOptions[1]) {
+                                            map[questionNumber] =
+                                                questionOptions[
+                                                    1]; // Update existing answer
+                                          }
+                                          exists = true;
+                                          break; // Exit loop as the questionNumber is found
+                                        }
+                                      }
+
+                                      // If the answer doesn't exist, add it
+                                      if (!exists) {
+                                        answers.add({
+                                          questionNumber: questionOptions[1]
+                                        });
+                                      }
+                                      print(answers);
+                                    });
+                                  },
+                                  child: OptionsContainer(
+                                    option: "B",
+                                    value: unescape.convert(questionOptions[1]),
+                                    border: answers.isEmpty
+                                        ? false
+                                        : answers[questionNumber]
+                                                    .entries
+                                                    .first
+                                                    .value ==
+                                                questionOptions[1]
+                                            ? true
+                                            : false,
+                                  ),
+                                )
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      isSelected = true;
+                                      bool exists = false;
+                                      answers.removeWhere(
+                                          (map) => map.values.contains(''));
+
+                                      // Loop through the list to check if the answer already exists
+                                      for (var map in answers) {
+                                        if (map.containsKey(questionNumber)) {
+                                          // Check if the value is different, if so, update it
+                                          if (map[questionNumber] !=
+                                              questionOptions[0]) {
+                                            map[questionNumber] =
+                                                questionOptions[
+                                                    0]; // Update existing answer
+                                            // String oldValue = map.remove(questionNumber)!;
+                                            //
+                                            // // Add a new key-value pair with the updated key (2)
+                                            // map[2] = oldValue;
+                                          }
+                                          exists = true;
+                                          break; // Exit loop as the questionNumber is found
+                                        }
+                                      }
+
+                                      // If the answer doesn't exist, add it
+                                      if (!exists) {
+                                        answers.add({
+                                          questionNumber: questionOptions[0]
+                                        });
+                                      }
+
+                                      print(answers);
+                                    });
+                                  },
+                                  child: OptionsContainer(
+                                      option: "A",
+                                      value:
+                                          unescape.convert(questionOptions[0]),
+                                      border: answers.isEmpty
+                                          ? false
+                                          : answers[questionNumber]
+                                                      .entries
+                                                      .first
+                                                      .value ==
+                                                  questionOptions[0]
+                                              ? true
+                                              : false),
+                                ),
+                                const SizedBox(
+                                  height: 20.0,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      isSelected = true;
+                                      bool exists = false;
+                                      answers.removeWhere(
+                                          (map) => map.values.contains(''));
+
+                                      // Loop through the list to check if the answer already exists
+                                      for (var map in answers) {
+                                        if (map.containsKey(questionNumber)) {
+                                          // Check if the value is different, if so, update it
+                                          if (map[questionNumber] !=
+                                              questionOptions[1]) {
+                                            map[questionNumber] =
+                                                questionOptions[
+                                                    1]; // Update existing answer
+                                          }
+                                          exists = true;
+                                          break; // Exit loop as the questionNumber is found
+                                        }
+                                      }
+
+                                      // If the answer doesn't exist, add it
+                                      if (!exists) {
+                                        answers.add({
+                                          questionNumber: questionOptions[1]
+                                        });
+                                      }
+                                      print(answers);
+                                    });
+                                  },
+                                  child: OptionsContainer(
+                                    option: "B",
+                                    value: unescape.convert(questionOptions[1]),
+                                    border: answers.isEmpty
+                                        ? false
+                                        : answers[questionNumber]
+                                                    .entries
+                                                    .first
+                                                    .value ==
+                                                questionOptions[1]
+                                            ? true
+                                            : false,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20.0,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      isSelected = true;
+                                      bool exists = false;
+                                      answers.removeWhere(
+                                          (map) => map.values.contains(''));
+
+                                      // Loop through the list to check if the answer already exists
+                                      for (var map in answers) {
+                                        if (map.containsKey(questionNumber)) {
+                                          // Check if the value is different, if so, update it
+                                          if (map[questionNumber] !=
+                                              questionOptions[2]) {
+                                            map[questionNumber] =
+                                                questionOptions[
+                                                    2]; // Update existing answer
+                                          }
+                                          exists = true;
+                                          break; // Exit loop as the questionNumber is found
+                                        }
+                                      }
+
+                                      // If the answer doesn't exist, add it
+                                      if (!exists) {
+                                        answers.add({
+                                          questionNumber: questionOptions[2]
+                                        });
+                                      }
+                                      print(answers);
+                                    });
+                                  },
+                                  child: OptionsContainer(
+                                    option: "C",
+                                    value: unescape.convert(questionOptions[2]),
+                                    border: answers.isEmpty
+                                        ? false
+                                        : answers[questionNumber]
+                                                    .entries
+                                                    .first
+                                                    .value ==
+                                                questionOptions[2]
+                                            ? true
+                                            : false,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20.0,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      isSelected = true;
+                                      bool exists = false;
+                                      answers.removeWhere(
+                                          (map) => map.values.contains(''));
+
+                                      // Loop through the list to check if the answer already exists
+                                      for (var map in answers) {
+                                        if (map.containsKey(questionNumber)) {
+                                          // Check if the value is different, if so, update it
+                                          if (map[questionNumber] !=
+                                              questionOptions[3]) {
+                                            map[questionNumber] =
+                                                questionOptions[
+                                                    3]; // Update existing answer
+                                          }
+                                          exists = true;
+                                          break; // Exit loop as the questionNumber is found
+                                        }
+                                      }
+
+                                      // If the answer doesn't exist, add it
+                                      if (!exists) {
+                                        answers.add({
+                                          questionNumber: questionOptions[3]
+                                        });
+                                      }
+                                      print(answers);
+                                    });
+                                  },
+                                  child: OptionsContainer(
+                                      option: "D",
+                                      value:
+                                          unescape.convert(questionOptions[3]),
+                                      border: answers.isEmpty
+                                          ? false
+                                          : answers[questionNumber]
+                                                      .entries
+                                                      .first
+                                                      .value ==
+                                                  questionOptions[3]
+                                              ? true
+                                              : false),
+                                ),
+                              ],
+                            ),
                       const SizedBox(
                         height: 30.0,
                       ),
                       Row(
                         children: [
-                          if (selectedAnswer.isNotEmpty && !isDone)
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  if (selectedAnswer.isNotEmpty) {
-                                    // Access the first key
-                                    String firstKey =
-                                        selectedAnswer.entries.first.key;
-
-                                    // You can now pass the first key to the checkAnswer function
-                                    checkAnswer(firstKey);
-                                  } else {
-                                    print('The map is empty');
-                                  }
-                                  print(answers);
-                                },
-                                child: Material(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  color: Colors.black,
-                                  elevation: 5.0,
-                                  child: const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 25.0, horizontal: 20.0),
-                                      child: Center(
-                                        child: Text(
-                                          textAlign: TextAlign.center,
-                                          'NEXT',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.w900),
-                                        ),
-                                      )),
-                                ),
-                              ),
-                            ),
-                          SizedBox(width: 10.0),
                           if (questionNumber >= 1)
                             Expanded(
                               child: GestureDetector(
@@ -402,6 +582,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                     questionNumber -= 1;
                                     updateOptions(false);
                                     isDone = false;
+                                    print(answers);
+                                    print(questionOptions);
                                   });
                                 },
                                 child: Material(
@@ -424,19 +606,98 @@ class _QuizScreenState extends State<QuizScreen> {
                                 ),
                               ),
                             ),
-                          isDone ? SizedBox(width: 10.0) : Container(),
+                          if (questionNumber >= 1) const SizedBox(width: 10.0),
+                          if (answers.isNotEmpty && !isDone)
+                            isSelected &&
+                                    answers[questionNumber]
+                                        .entries
+                                        .first
+                                        .value
+                                        .isNotEmpty
+                                ? Expanded(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if (answers.isNotEmpty) {
+                                          // Access the first key
+                                          String firstKey =
+                                              answers[questionNumber]
+                                                  .entries
+                                                  .first
+                                                  .value;
+
+                                          // You can now pass the first key to the checkAnswer function
+                                          checkAnswer(firstKey);
+                                          answers.add({questionNumber: ''});
+                                          print(answers);
+                                          print(
+                                              'Incorrect Answers: $incorrectAnswers');
+                                          print(
+                                              "Correct Answers: $correctAnswers");
+                                        } else {
+                                          print('The map is empty');
+                                        }
+                                      },
+                                      child: Material(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        color: Colors.black,
+                                        elevation: 5.0,
+                                        child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 25.0,
+                                                horizontal: 20.0),
+                                            child: Center(
+                                              child: Text(
+                                                textAlign: TextAlign.center,
+                                                'NEXT',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 16.0,
+                                                    fontWeight:
+                                                        FontWeight.w900),
+                                              ),
+                                            )),
+                                      ),
+                                    ),
+                                  )
+                                : Expanded(
+                                    child: Material(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      color: Colors.grey,
+                                      elevation: 5.0,
+                                      child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 25.0, horizontal: 20.0),
+                                          child: Center(
+                                            child: Text(
+                                              textAlign: TextAlign.center,
+                                              'NEXT',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.w900),
+                                            ),
+                                          )),
+                                    ),
+                                  ),
+                          isDone ? const SizedBox(width: 10.0) : Container(),
                           isDone
                               ? Expanded(
                                   child: GestureDetector(
                                     onTap: () {
-                                      List<Widget> savedAnswers =
-                                          answers.sublist(0, questions.length);
+                                      answers.removeWhere(
+                                          (map) => map.values.contains(''));
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   ResultScreen(
-                                                      answers: savedAnswers)));
+                                                    answers: answers,
+                                                    correctAnswers:
+                                                        correctAnswers,
+                                                    incorrectAnswers:
+                                                        incorrectAnswers,
+                                                  )));
                                     },
                                     child: Material(
                                       borderRadius: BorderRadius.circular(10.0),

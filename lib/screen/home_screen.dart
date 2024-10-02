@@ -7,6 +7,33 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, int> triviaCategories = {
+      'General Knowledge': 9,
+      'Books': 10,
+      'Film': 11,
+      'Music': 12,
+      'Musicals & Theatres': 13,
+      'Television': 14,
+      'Video Games': 15,
+      'Board Games': 16,
+      'Science & Nature': 17,
+      'Science: Computers': 18,
+      'Science: Mathematics': 19,
+      'Mythology': 20,
+      'Sports': 21,
+      'Geography': 22,
+      'History': 23,
+      'Politics': 24,
+      'Art': 25,
+      'Celebrities': 26,
+      'Animals': 27,
+      'Vehicles': 28,
+      'Comics': 29,
+      'Science: Gadgets': 30,
+      'Japanese Anime & Manga': 31,
+      'Cartoon & Animations': 32,
+    };
+
     return SafeArea(
         child: Scaffold(
       backgroundColor: const Color(0xff1A3636),
@@ -23,13 +50,6 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Text(
                       'Hello,',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 23.0),
-                    ),
-                    Text(
-                      'Oyewole Agboola',
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
@@ -59,39 +79,7 @@ class HomeScreen extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                   fontSize: 20.0),
             ),
-
-            // TextField(
-            //   cursorColor: Colors.black,
-            //   decoration: InputDecoration(
-            //     filled: true,
-            //     fillColor: Colors.white,
-            //     // Background color for the text field
-            //     hintText: 'Search by quiz categories',
-            //     // Placeholder text
-            //     prefixIcon: const Padding(
-            //       padding: EdgeInsets.only(left: 10.0),
-            //       child: Icon(
-            //         Icons.search, // The search icon
-            //         color: Colors.black,
-            //       ),
-            //     ),
-            //     contentPadding: const EdgeInsets.symmetric(vertical: 20),
-            //     // Adjust padding inside the text field
-            //     border: OutlineInputBorder(
-            //       borderRadius: BorderRadius.circular(30.0),
-            //       // Rounded corners
-            //       borderSide: BorderSide.none, // No visible border
-            //     ),
-            //     hintStyle: const TextStyle(
-            //       color: Colors.black, // Color for the hint text
-            //     ),
-            //   ),
-            //   style: const TextStyle(
-            //       color: Colors.white,
-            //       fontWeight: FontWeight.w900,
-            //       fontSize: 18.0),
-            // ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 25),
             const Text(
               "Explore Categories",
               style: TextStyle(
@@ -100,53 +88,25 @@ class HomeScreen extends StatelessWidget {
                   fontSize: 23.0),
             ),
             const SizedBox(height: 20),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CategoryCard(
-                  imageSrc:
-                      'https://i.pinimg.com/474x/e5/bc/7b/e5bc7b7b387f4a7d833633248b190939.jpg',
-                  name: 'Film',
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // Number of columns
+                  crossAxisSpacing: 50.0,
+                  mainAxisSpacing: 0.0,
+                  childAspectRatio:
+                      3 / 4, // Adjust this to change card size ratio
                 ),
-                SizedBox(
-                  width: 20.0,
-                ),
-                CategoryCard(
-                  imageSrc:
-                      "https://i.pinimg.com/originals/9b/ed/56/9bed5665dfd4762a32788d40379eb019.gif",
-                  name: "Music",
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CategoryCard(
-                  imageSrc:
-                      "https://i.pinimg.com/474x/56/27/ea/5627ea13f97055cd12d555339c4dd726.jpg",
-                  name: "Nature",
-                ),
-                SizedBox(
-                  width: 20.0,
-                ),
-                CategoryCard(
-                  imageSrc:
-                      "https://i.pinimg.com/474x/2f/47/62/2f4762d4be0f5f6ac21359046fe6d424.jpg",
-                  name: "Sports",
-                )
-              ],
-            ),
-            const SizedBox(height: 40.0),
-            const Center(
-              child: Text(
-                "View All",
-                style: TextStyle(
-                    color: Color(0xffD6BD98),
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.w900),
+                itemCount: triviaCategories.length,
+                itemBuilder: (context, index) {
+                  String categoryName = triviaCategories.keys.elementAt(index);
+                  return CategoryCard(
+                    imageSrc:
+                        "https://i.pinimg.com/564x/21/8a/24/218a24c8599306dc86e0855b644eb358.jpg",
+                    // Use real image URLs for each category
+                    name: categoryName,
+                  );
+                },
               ),
             )
           ],
