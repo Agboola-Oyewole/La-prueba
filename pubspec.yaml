@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   http: ^1.2.2
   html_unescape: ^2.0.0
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:

@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:la_prueba/screen/home_screen.dart';
 
+import 'correction_screen.dart';
+
 class ResultScreen extends StatelessWidget {
   const ResultScreen(
       {super.key,
       required this.answers,
       required this.correctAnswers,
-      required this.incorrectAnswers});
+      required this.incorrectAnswers,
+      required this.questionOptions,
+      required this.questions});
 
   final List<Map<int, String>> answers; // Corrected declaration
   final Map<int, String> incorrectAnswers;
   final Map<int, String> correctAnswers;
+  final List questionOptions;
+  final List questions;
 
   @override
   Widget build(BuildContext context) {
@@ -59,23 +65,35 @@ class ResultScreen extends StatelessWidget {
                         SizedBox(
                           height: 30.0,
                         ),
-                        Material(
-                          borderRadius: BorderRadius.circular(10.0),
-                          color: Colors.black,
-                          elevation: 5.0,
-                          child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 25.0, horizontal: 20.0),
-                              child: Center(
-                                child: Text(
-                                  textAlign: TextAlign.center,
-                                  'GET CORRECT ANSWERS',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w900),
-                                ),
-                              )),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CorrectionScreen(
+                                          questions: questions,
+                                          answers: answers,
+                                          questionOptions: questionOptions,
+                                        )));
+                          },
+                          child: Material(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: Colors.black,
+                            elevation: 5.0,
+                            child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 25.0, horizontal: 20.0),
+                                child: Center(
+                                  child: Text(
+                                    textAlign: TextAlign.center,
+                                    'GET CORRECT ANSWERS',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w900),
+                                  ),
+                                )),
+                          ),
                         )
                       ],
                     ),

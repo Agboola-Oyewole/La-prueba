@@ -26,6 +26,7 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   List<dynamic> questions = []; // Store the trivia questions
   List<String> questionOptions = [];
+  List<List<String>> totalOptions = [];
   int questionNumber = 0;
   HtmlUnescape unescape = HtmlUnescape();
   bool isDone = false;
@@ -68,12 +69,37 @@ class _QuizScreenState extends State<QuizScreen> {
           i++) {
         questionOptions.add(questions[questionNumber]['incorrect_answers'][i]);
       }
+
       if (!isNotPrevious) {
         setState(() {
           isSelected = true;
         });
       }
     });
+    if (isNotPrevious) {
+      questionOptions.shuffle();
+      if (questionNumber + 1 <= questions.length) {
+        setState(() {
+          // Check if the current questionOptions list is already in totalOptions
+          bool alreadyExists = totalOptions.any((list) =>
+                  list.toString() ==
+                  questionOptions.toString() // Comparing the list contents
+              );
+
+          if (!alreadyExists) {
+            // Add a copy of questionOptions if it's not already present
+            totalOptions.add(List<String>.from(questionOptions));
+            print("Added to totalOptions");
+          } else {
+            print("This list is already in totalOptions");
+          }
+
+          // Remove duplicate lists from totalOptions (just in case)
+          totalOptions = totalOptions.toSet().toList();
+          print("Duplicates removed from totalOptions");
+        });
+      }
+    }
   }
 
   // Check if the selected answer is correct
@@ -278,10 +304,10 @@ class _QuizScreenState extends State<QuizScreen> {
                                         if (map.containsKey(questionNumber)) {
                                           // Check if the value is different, if so, update it
                                           if (map[questionNumber] !=
-                                              questionOptions[0]) {
-                                            map[questionNumber] =
-                                                questionOptions[
-                                                    0]; // Update existing answer
+                                              totalOptions[questionNumber][0]) {
+                                            map[questionNumber] = totalOptions[
+                                                    questionNumber]
+                                                [0]; // Update existing answer
                                             // String oldValue = map.remove(questionNumber)!;
                                             //
                                             // // Add a new key-value pair with the updated key (2)
@@ -295,7 +321,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                       // If the answer doesn't exist, add it
                                       if (!exists) {
                                         answers.add({
-                                          questionNumber: questionOptions[0]
+                                          questionNumber:
+                                              totalOptions[questionNumber][0]
                                         });
                                       }
 
@@ -304,15 +331,16 @@ class _QuizScreenState extends State<QuizScreen> {
                                   },
                                   child: OptionsContainer(
                                       option: "A",
-                                      value:
-                                          unescape.convert(questionOptions[0]),
+                                      value: unescape.convert(
+                                          totalOptions[questionNumber][0]),
                                       border: answers.isEmpty
                                           ? false
                                           : answers[questionNumber]
                                                       .entries
                                                       .first
                                                       .value ==
-                                                  questionOptions[0]
+                                                  totalOptions[questionNumber]
+                                                      [0]
                                               ? true
                                               : false),
                                 ),
@@ -332,10 +360,10 @@ class _QuizScreenState extends State<QuizScreen> {
                                         if (map.containsKey(questionNumber)) {
                                           // Check if the value is different, if so, update it
                                           if (map[questionNumber] !=
-                                              questionOptions[1]) {
-                                            map[questionNumber] =
-                                                questionOptions[
-                                                    1]; // Update existing answer
+                                              totalOptions[questionNumber][1]) {
+                                            map[questionNumber] = totalOptions[
+                                                    questionNumber]
+                                                [1]; // Update existing answer
                                           }
                                           exists = true;
                                           break; // Exit loop as the questionNumber is found
@@ -345,7 +373,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                       // If the answer doesn't exist, add it
                                       if (!exists) {
                                         answers.add({
-                                          questionNumber: questionOptions[1]
+                                          questionNumber:
+                                              totalOptions[questionNumber][1]
                                         });
                                       }
                                       print(answers);
@@ -353,14 +382,15 @@ class _QuizScreenState extends State<QuizScreen> {
                                   },
                                   child: OptionsContainer(
                                     option: "B",
-                                    value: unescape.convert(questionOptions[1]),
+                                    value: unescape.convert(
+                                        totalOptions[questionNumber][1]),
                                     border: answers.isEmpty
                                         ? false
                                         : answers[questionNumber]
                                                     .entries
                                                     .first
                                                     .value ==
-                                                questionOptions[1]
+                                                totalOptions[questionNumber][1]
                                             ? true
                                             : false,
                                   ),
@@ -382,10 +412,10 @@ class _QuizScreenState extends State<QuizScreen> {
                                         if (map.containsKey(questionNumber)) {
                                           // Check if the value is different, if so, update it
                                           if (map[questionNumber] !=
-                                              questionOptions[0]) {
-                                            map[questionNumber] =
-                                                questionOptions[
-                                                    0]; // Update existing answer
+                                              totalOptions[questionNumber][0]) {
+                                            map[questionNumber] = totalOptions[
+                                                    questionNumber]
+                                                [0]; // Update existing answer
                                             // String oldValue = map.remove(questionNumber)!;
                                             //
                                             // // Add a new key-value pair with the updated key (2)
@@ -399,7 +429,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                       // If the answer doesn't exist, add it
                                       if (!exists) {
                                         answers.add({
-                                          questionNumber: questionOptions[0]
+                                          questionNumber:
+                                              totalOptions[questionNumber][0]
                                         });
                                       }
 
@@ -408,15 +439,16 @@ class _QuizScreenState extends State<QuizScreen> {
                                   },
                                   child: OptionsContainer(
                                       option: "A",
-                                      value:
-                                          unescape.convert(questionOptions[0]),
+                                      value: unescape.convert(
+                                          totalOptions[questionNumber][0]),
                                       border: answers.isEmpty
                                           ? false
                                           : answers[questionNumber]
                                                       .entries
                                                       .first
                                                       .value ==
-                                                  questionOptions[0]
+                                                  totalOptions[questionNumber]
+                                                      [0]
                                               ? true
                                               : false),
                                 ),
@@ -436,10 +468,10 @@ class _QuizScreenState extends State<QuizScreen> {
                                         if (map.containsKey(questionNumber)) {
                                           // Check if the value is different, if so, update it
                                           if (map[questionNumber] !=
-                                              questionOptions[1]) {
-                                            map[questionNumber] =
-                                                questionOptions[
-                                                    1]; // Update existing answer
+                                              totalOptions[questionNumber][1]) {
+                                            map[questionNumber] = totalOptions[
+                                                    questionNumber]
+                                                [1]; // Update existing answer
                                           }
                                           exists = true;
                                           break; // Exit loop as the questionNumber is found
@@ -449,7 +481,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                       // If the answer doesn't exist, add it
                                       if (!exists) {
                                         answers.add({
-                                          questionNumber: questionOptions[1]
+                                          questionNumber:
+                                              totalOptions[questionNumber][1]
                                         });
                                       }
                                       print(answers);
@@ -457,14 +490,15 @@ class _QuizScreenState extends State<QuizScreen> {
                                   },
                                   child: OptionsContainer(
                                     option: "B",
-                                    value: unescape.convert(questionOptions[1]),
+                                    value: unescape.convert(
+                                        totalOptions[questionNumber][1]),
                                     border: answers.isEmpty
                                         ? false
                                         : answers[questionNumber]
                                                     .entries
                                                     .first
                                                     .value ==
-                                                questionOptions[1]
+                                                totalOptions[questionNumber][1]
                                             ? true
                                             : false,
                                   ),
@@ -485,10 +519,10 @@ class _QuizScreenState extends State<QuizScreen> {
                                         if (map.containsKey(questionNumber)) {
                                           // Check if the value is different, if so, update it
                                           if (map[questionNumber] !=
-                                              questionOptions[2]) {
-                                            map[questionNumber] =
-                                                questionOptions[
-                                                    2]; // Update existing answer
+                                              totalOptions[questionNumber][2]) {
+                                            map[questionNumber] = totalOptions[
+                                                    questionNumber]
+                                                [2]; // Update existing answer
                                           }
                                           exists = true;
                                           break; // Exit loop as the questionNumber is found
@@ -498,7 +532,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                       // If the answer doesn't exist, add it
                                       if (!exists) {
                                         answers.add({
-                                          questionNumber: questionOptions[2]
+                                          questionNumber:
+                                              totalOptions[questionNumber][2]
                                         });
                                       }
                                       print(answers);
@@ -506,14 +541,15 @@ class _QuizScreenState extends State<QuizScreen> {
                                   },
                                   child: OptionsContainer(
                                     option: "C",
-                                    value: unescape.convert(questionOptions[2]),
+                                    value: unescape.convert(
+                                        totalOptions[questionNumber][2]),
                                     border: answers.isEmpty
                                         ? false
                                         : answers[questionNumber]
                                                     .entries
                                                     .first
                                                     .value ==
-                                                questionOptions[2]
+                                                totalOptions[questionNumber][2]
                                             ? true
                                             : false,
                                   ),
@@ -534,10 +570,10 @@ class _QuizScreenState extends State<QuizScreen> {
                                         if (map.containsKey(questionNumber)) {
                                           // Check if the value is different, if so, update it
                                           if (map[questionNumber] !=
-                                              questionOptions[3]) {
-                                            map[questionNumber] =
-                                                questionOptions[
-                                                    3]; // Update existing answer
+                                              totalOptions[questionNumber][3]) {
+                                            map[questionNumber] = totalOptions[
+                                                    questionNumber]
+                                                [3]; // Update existing answer
                                           }
                                           exists = true;
                                           break; // Exit loop as the questionNumber is found
@@ -547,7 +583,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                       // If the answer doesn't exist, add it
                                       if (!exists) {
                                         answers.add({
-                                          questionNumber: questionOptions[3]
+                                          questionNumber:
+                                              totalOptions[questionNumber][3]
                                         });
                                       }
                                       print(answers);
@@ -555,15 +592,16 @@ class _QuizScreenState extends State<QuizScreen> {
                                   },
                                   child: OptionsContainer(
                                       option: "D",
-                                      value:
-                                          unescape.convert(questionOptions[3]),
+                                      value: unescape.convert(
+                                          totalOptions[questionNumber][3]),
                                       border: answers.isEmpty
                                           ? false
                                           : answers[questionNumber]
                                                       .entries
                                                       .first
                                                       .value ==
-                                                  questionOptions[3]
+                                                  totalOptions[questionNumber]
+                                                      [3]
                                               ? true
                                               : false),
                                 ),
@@ -629,6 +667,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                           checkAnswer(firstKey);
                                           answers.add({questionNumber: ''});
                                           print(answers);
+                                          print("Total Options: $totalOptions");
                                           print(
                                               'Incorrect Answers: $incorrectAnswers');
                                           print(
@@ -687,11 +726,19 @@ class _QuizScreenState extends State<QuizScreen> {
                                     onTap: () {
                                       answers.removeWhere(
                                           (map) => map.values.contains(''));
+                                      setState(() {
+                                        totalOptions =
+                                            totalOptions.toSet().toList();
+                                      });
+                                      print(totalOptions);
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   ResultScreen(
+                                                    questionOptions:
+                                                        totalOptions,
+                                                    questions: questions,
                                                     answers: answers,
                                                     correctAnswers:
                                                         correctAnswers,

@@ -40,7 +40,7 @@ class _PropertiesDropdownState extends State<PropertiesDropdown> {
     'Vehicles': 28,
     'Comics': 29,
     'Science: Gadgets': 30,
-    'Japanese Anime & Manga': 31,
+    'Anime & Manga': 31,
     'Cartoon & Animations': 32,
   };
 
