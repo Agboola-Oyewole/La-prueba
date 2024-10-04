@@ -206,7 +206,7 @@ class ResultScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(height: 20.0),
+                        const SizedBox(height: 20.0),
                         Row(
                           children: [
                             Expanded(

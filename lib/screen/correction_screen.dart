@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:la_prueba/components/correction_card.dart';
 
+import 'home_screen.dart';
+
 class CorrectionScreen extends StatelessWidget {
   const CorrectionScreen(
       {super.key,
@@ -51,6 +53,35 @@ class CorrectionScreen extends StatelessWidget {
                   },
                 ),
               ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomeScreen()));
+                },
+                child: Material(
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: Colors.black,
+                  elevation: 5.0,
+                  child: const Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: 25.0, horizontal: 20.0),
+                      child: Center(
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          'DONE',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w900),
+                        ),
+                      )),
+                ),
+              )
             ],
           ),
         ),
