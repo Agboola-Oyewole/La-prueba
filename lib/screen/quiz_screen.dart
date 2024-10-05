@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:la_prueba/components/options_container.dart';
 import 'package:la_prueba/screen/result_screen.dart';
 
+// TODO: WORK ON THE RangeError (length): Invalid value: Not in inclusive range 0..1: 2 ON LINE package:la_prueba/screen/quiz_screen.dart:335:55) FOR TRUE OR FLASE QUESTIONS
+
 class QuizScreen extends StatefulWidget {
   const QuizScreen(
       {super.key,
@@ -61,13 +63,15 @@ class _QuizScreenState extends State<QuizScreen> {
       questionOptions.clear();
 
       // Add the correct answer
-      questionOptions.add(questions[questionNumber]['correct_answer']);
+      questionOptions
+          .add(unescape.convert(questions[questionNumber]['correct_answer']));
 
       // Add the incorrect answers
       for (int i = 0;
           i < questions[questionNumber]['incorrect_answers'].length;
           i++) {
-        questionOptions.add(questions[questionNumber]['incorrect_answers'][i]);
+        questionOptions.add(unescape
+            .convert(questions[questionNumber]['incorrect_answers'][i]));
       }
 
       if (!isNotPrevious) {
@@ -80,18 +84,31 @@ class _QuizScreenState extends State<QuizScreen> {
       questionOptions.shuffle();
       if (questionNumber + 1 <= questions.length) {
         setState(() {
-          // Check if the current questionOptions list is already in totalOptions
-          bool alreadyExists = totalOptions.any((list) =>
-                  list.toString() ==
-                  questionOptions.toString() // Comparing the list contents
-              );
+          // Check if at least 2 items in questionOptions are in any list of totalOptions
+          bool hasSimilarOptions = totalOptions.any((list) {
+            int matchCount = 0;
 
-          if (!alreadyExists) {
-            // Add a copy of questionOptions if it's not already present
+            // Count how many items from questionOptions are in the current list of totalOptions
+            for (String option in questionOptions) {
+              if (list.contains(option)) {
+                matchCount++;
+              }
+
+              // If at least 2 matches are found, stop counting further
+              if (matchCount >= 2) {
+                return true;
+              }
+            }
+            return false;
+          });
+
+          if (!hasSimilarOptions) {
+            // Add a copy of questionOptions if it doesn't have at least 2 similar items
             totalOptions.add(List<String>.from(questionOptions));
             print("Added to totalOptions");
           } else {
-            print("This list is already in totalOptions");
+            print(
+                "This list has at least 2 similar items in totalOptions, not adding.");
           }
 
           // Remove duplicate lists from totalOptions (just in case)
